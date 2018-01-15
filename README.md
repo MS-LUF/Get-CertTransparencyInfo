@@ -1,20 +1,21 @@
 # Get-CertTransparencyInfo
 All certificate information you need - a cmdlet to request / search all certificates info available for all published certificates - based on CTL info available from crt.sh
 
-# install use-onyphe from PowerShell Gallery repository
+## install use-onyphe from PowerShell Gallery repository
 You can easily install it from powershell gallery repository
 https://www.powershellgallery.com/packages/Get-CertTransparencyInfo/
 using a simple powershell command and an internet access :-) 
 ```
 	Install-Module -Name Get-CertTransparencyInfo
 ```
-# import module from PowerShell 
+## import module from PowerShell 
 ```	
 	.EXAMPLE
 	C:\PS> import-module Get-CertTransparencyInfo.psm1
   
 ```
-# module content : Get-CertTransparencyInfo function
+## module content
+### Get-CertTransparencyInfo function
  ```
 		.SYNOPSIS 
 		Get CTL info for domains,fqdn using CRT.sh web site
