@@ -1,6 +1,8 @@
 # Get-CertTransparencyInfo
 All certificate information you need - a cmdlet to request / search all certificates info available for all published certificates - based on CTL info available from crt.sh
 
+(c) 2018 lucas-cueff.com Distributed under Artistic Licence 2.0 (https://opensource.org/licenses/artistic-license-2.0).
+
 ## install use-onyphe from PowerShell Gallery repository
 You can easily install it from powershell gallery repository
 https://www.powershellgallery.com/packages/Get-CertTransparencyInfo/
