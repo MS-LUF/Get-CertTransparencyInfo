@@ -94,6 +94,9 @@ Function Get-CertTransparencyInfo {
 		get certificate info from CTL databases for certificates containing *.google.com in their SAN and dump certificate found
 		C:\PS> Get-CertTransparancyInfo -SearchInfo "*google.com" -AdvSearch San-DnsName -GetCertificate
 
+		.EXAMPLE
+		get certificate info from CTL databases for google.com domain including expired
+		C:\PS> Get-CertTransparancyInfo -SearchInfo "google.com" -IncludeExpired
 
 	#>
 		param(
@@ -103,22 +106,29 @@ Function Get-CertTransparencyInfo {
 			[ValidateSet('Subject-email','Subject-CommonName','Subject-OrgaName','Subject-OrgaUnitName','San-DnsName','San-IP','San-RFC822Name','Cert-SubjectKeyIdentifier')]
 			   [String]$AdvSearch,
 			[parameter(Mandatory=$false)]
-			   [switch]$GetCertificate
+			   [switch]$GetCertificate,
+			[parameter(Mandatory=$false)]
+			   [switch]$IncludeExpired			   
 		)
 		$SearchInfo = $SearchInfo -replace " ", "+"
 		$SearchInfo = $SearchInfo -replace "\*", "%"
 		$script:currentdate = get-date
 		$script:crtsh = "https://crt.sh/"
+		if ($IncludeExpired) {
+		    $expired = ""
+		} else {
+		    $expired = "&exclude=expired"
+		}		
 		if ($advsearch){
 			switch ($advsearch) {
-				'Subject-email' {$url = "$($crtsh)json?E=$($SearchInfo)&exclude=expired"}
-				'Subject-CommonName' {$url = "$($crtsh)json?CN=$($SearchInfo)&exclude=expired"}
-				'Subject-OrgaName' {$url = "$($crtsh)json?O=$($SearchInfo)&exclude=expired"}
-				'Subject-OrgaUnitName' {$url = "$($crtsh)json?OU=$($SearchInfo)&exclude=expired"}
-				'San-DnsName' {$url = "$($crtsh)json?dNSName=$($SearchInfo)&exclude=expired"}
-				'San-IP' {$url = "$($crtsh)json?iPAddress=$($SearchInfo)&exclude=expired"}
-				'San-RFC822Name' {$url = "$($crtsh)json?rfc822Name=$($SearchInfo)&exclude=expired"}
-				'Cert-SubjectKeyIdentifier' {$url = "$($crtsh)json?ski=$($SearchInfo)&exclude=expired"}
+				'Subject-email' {$url = "$($crtsh)json?E=$($SearchInfo)$expired"}
+				'Subject-CommonName' {$url = "$($crtsh)json?CN=$($SearchInfo)$expired"}
+				'Subject-OrgaName' {$url = "$($crtsh)json?O=$($SearchInfo)$expired"}
+				'Subject-OrgaUnitName' {$url = "$($crtsh)json?OU=$($SearchInfo)$expired"}
+				'San-DnsName' {$url = "$($crtsh)json?dNSName=$($SearchInfo)$expired"}
+				'San-IP' {$url = "$($crtsh)json?iPAddress=$($SearchInfo)$expired"}
+				'San-RFC822Name' {$url = "$($crtsh)json?rfc822Name=$($SearchInfo)$expired"}
+				'Cert-SubjectKeyIdentifier' {$url = "$($crtsh)json?ski=$($SearchInfo)$expired"}
 				Default {$url = "$($crtsh)json?q=$($SearchInfo)"}
 			}
 		} else {
