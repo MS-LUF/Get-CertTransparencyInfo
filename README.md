@@ -3,6 +3,10 @@ All certificate information you need - a cmdlet to request / search all certific
 
 (c) 2018 lucas-cueff.com Distributed under Artistic Licence 2.0 (https://opensource.org/licenses/artistic-license-2.0).
 
+## version 0.3 info
+include expired certificates in result with IncludeExpired swith - requested and proposed by plaintextcity
+manage 404 error code from crt.sh as no result/certificate found
+
 ## install use-onyphe from PowerShell Gallery repository
 You can easily install it from powershell gallery repository
 https://www.powershellgallery.com/packages/Get-CertTransparencyInfo/
@@ -25,7 +29,7 @@ using a simple powershell command and an internet access :-)
 		.DESCRIPTION
 		Get CTL info for domains,fqdn using CRT.sh web site
 	
-		.PARAMETER GroupNameValue
+		.PARAMETER SearchDomain
 		Mandatory parameter
 		-SearchDomain string
 		Provide domain, fqdn to search with crt.sh website
@@ -37,6 +41,10 @@ using a simple powershell command and an internet access :-)
 		.PARAMETER GetCertificate
 		-GetCertificate switch
 		download all certificates found and add the results in the objects return (property Cli_certificate)
+
+		.PARAMETER IncludeExpired
+		-IncludeExpired switch
+		include all expired certificates in result
 	
 		.OUTPUTS
 		TypeName : Selected.System.Management.Automation.PSCustomObject
@@ -105,5 +113,9 @@ using a simple powershell command and an internet access :-)
 		.EXAMPLE
 		get certificate info from CTL databases for certificates containing *.google.com in their SAN and dump certificate found
 		C:\PS> Get-CertTransparancyInfo -SearchInfo "*google.com" -AdvSearch San-DnsName -GetCertificate
+		
+		.EXAMPLE
+		get certificate info from CTL databases for google.com domain including expired
+		C:\PS> Get-CertTransparancyInfo -SearchInfo "google.com" -IncludeExpired
     
-    ```
+ ```
