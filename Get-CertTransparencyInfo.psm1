@@ -3,7 +3,9 @@
 #
 # Released on: 01/2018
 #
-#'(c) 2017 lucas-cueff.com - Distributed under Artistic Licence 2.0 (https://opensource.org/licenses/artistic-license-2.0).'
+# v0.2 : include expired certificqtes in result with IncludeExpired swith - requested and proposed by plaintextcity on github
+#
+#'(c) 2018 lucas-cueff.com - Distributed under Artistic Licence 2.0 (https://opensource.org/licenses/artistic-license-2.0).'
 
 Function Get-CertTransparencyInfo {
 	<#
@@ -13,7 +15,7 @@ Function Get-CertTransparencyInfo {
 		.DESCRIPTION
 		Get CTL info for domains,fqdn using CRT.sh web site
 	
-		.PARAMETER GroupNameValue
+		.PARAMETER SearchDomain
 		Mandatory parameter
 		-SearchDomain string
 		Provide domain, fqdn to search with crt.sh website
@@ -25,6 +27,10 @@ Function Get-CertTransparencyInfo {
 		.PARAMETER GetCertificate
 		-GetCertificate switch
 		download all certificates found and add the results in the objects return (property Cli_certificate)
+
+		.PARAMETER IncludeExpired
+		-IncludeExpired switch
+		include all expired certificates in result
 	
 		.OUTPUTS
 		TypeName : Selected.System.Management.Automation.PSCustomObject
@@ -98,6 +104,7 @@ Function Get-CertTransparencyInfo {
 		get certificate info from CTL databases for google.com domain including expired
 		C:\PS> Get-CertTransparancyInfo -SearchInfo "google.com" -IncludeExpired
 
+
 	#>
 		param(
 			[parameter(ValueFromPipelineByPropertyName=$true,ValueFromPipeline=$true,Mandatory=$false)]
@@ -108,27 +115,27 @@ Function Get-CertTransparencyInfo {
 			[parameter(Mandatory=$false)]
 			   [switch]$GetCertificate,
 			[parameter(Mandatory=$false)]
-			   [switch]$IncludeExpired			   
+			   [switch]$IncludeExpired
 		)
 		$SearchInfo = $SearchInfo -replace " ", "+"
 		$SearchInfo = $SearchInfo -replace "\*", "%"
 		$script:currentdate = get-date
 		$script:crtsh = "https://crt.sh/"
-		if ($IncludeExpired) {
-		    $expired = ""
-		} else {
-		    $expired = "&exclude=expired"
-		}		
+		if ($IncludeExpired.IsPresent) {
+			$ExcludeExpired = $null
+		} Else {
+			$ExcludeExpired = "&exclude=expired"					
+		}
 		if ($advsearch){
 			switch ($advsearch) {
-				'Subject-email' {$url = "$($crtsh)json?E=$($SearchInfo)$expired"}
-				'Subject-CommonName' {$url = "$($crtsh)json?CN=$($SearchInfo)$expired"}
-				'Subject-OrgaName' {$url = "$($crtsh)json?O=$($SearchInfo)$expired"}
-				'Subject-OrgaUnitName' {$url = "$($crtsh)json?OU=$($SearchInfo)$expired"}
-				'San-DnsName' {$url = "$($crtsh)json?dNSName=$($SearchInfo)$expired"}
-				'San-IP' {$url = "$($crtsh)json?iPAddress=$($SearchInfo)$expired"}
-				'San-RFC822Name' {$url = "$($crtsh)json?rfc822Name=$($SearchInfo)$expired"}
-				'Cert-SubjectKeyIdentifier' {$url = "$($crtsh)json?ski=$($SearchInfo)$expired"}
+				'Subject-email' {$url = "$($crtsh)json?E=$($SearchInfo)$ExcludeExpired"}
+				'Subject-CommonName' {$url = "$($crtsh)json?CN=$($SearchInfo)$ExcludeExpired"}
+				'Subject-OrgaName' {$url = "$($crtsh)json?O=$($SearchInfo)$ExcludeExpired"}
+				'Subject-OrgaUnitName' {$url = "$($crtsh)json?OU=$($SearchInfo)$ExcludeExpired"}
+				'San-DnsName' {$url = "$($crtsh)json?dNSName=$($SearchInfo)$ExcludeExpired"}
+				'San-IP' {$url = "$($crtsh)json?iPAddress=$($SearchInfo)$ExcludeExpired"}
+				'San-RFC822Name' {$url = "$($crtsh)json?rfc822Name=$($SearchInfo)$ExcludeExpired"}
+				'Cert-SubjectKeyIdentifier' {$url = "$($crtsh)json?ski=$($SearchInfo)$ExcludeExpired"}
 				Default {$url = "$($crtsh)json?q=$($SearchInfo)"}
 			}
 		} else {
@@ -151,9 +158,13 @@ Function Get-CertTransparencyInfo {
 		try {
 			$webdata = invoke-webrequest $url
 		} catch {
-			write-warning "No certificate found or website not available"
-			write-error "Error Type: $($_.Exception.GetType().FullName)"
-			write-error "Error Message: $($_.Exception.Message)"
+			if ($_.Exception.Response.StatusCode.Value__ -eq 404) {
+				write-warning "No certificate found"
+			} Else {
+				write-warning "website error or not available"
+				write-error "Error Type: $($_.Exception.GetType().FullName)"
+				write-error "Error Message: $($_.Exception.Message)"
+			}
 			return
 		}
 		try {

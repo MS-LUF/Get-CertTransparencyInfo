@@ -12,7 +12,7 @@
 RootModule = 'Get-CertTransparencyInfo.psm1'
 
 # Num�ro de version de ce module.
-ModuleVersion = '0.1'
+ModuleVersion = '0.3'
 
 # �ditions PS prises en charge
 # CompatiblePSEditions = @()
@@ -105,10 +105,10 @@ PrivateData = @{
         ProjectUri = 'https://github.com/MS-LUF/Get-CertTransparencyInfo'
 
         # A URL to an icon representing this module.
-        #IconUri = ''
+        IconUri = 'http://www.lucas-cueff.com/files/gallery.png'
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+        ReleaseNotes = 'check 404 error from website'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
