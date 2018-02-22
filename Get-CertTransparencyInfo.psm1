@@ -108,37 +108,36 @@ Function Get-CertTransparencyInfo {
 			[parameter(Mandatory=$false)]
 			   [switch]$GetCertificate,
 			[parameter(Mandatory=$false)]
-			   [switch]$IncludeExpired			   
+			   [switch]$IncludeExpired
 		)
 		$SearchInfo = $SearchInfo -replace " ", "+"
 		$SearchInfo = $SearchInfo -replace "\*", "%"
 		$script:currentdate = get-date
 		$script:crtsh = "https://crt.sh/"
-		if ($IncludeExpired) {
-		    $expired = ""
-		} else {
-		    $expired = "&exclude=expired"
-		}		
 		if ($advsearch){
 			switch ($advsearch) {
-				'Subject-email' {$url = "$($crtsh)json?E=$($SearchInfo)$expired"}
-				'Subject-CommonName' {$url = "$($crtsh)json?CN=$($SearchInfo)$expired"}
-				'Subject-OrgaName' {$url = "$($crtsh)json?O=$($SearchInfo)$expired"}
-				'Subject-OrgaUnitName' {$url = "$($crtsh)json?OU=$($SearchInfo)$expired"}
-				'San-DnsName' {$url = "$($crtsh)json?dNSName=$($SearchInfo)$expired"}
-				'San-IP' {$url = "$($crtsh)json?iPAddress=$($SearchInfo)$expired"}
-				'San-RFC822Name' {$url = "$($crtsh)json?rfc822Name=$($SearchInfo)$expired"}
-				'Cert-SubjectKeyIdentifier' {$url = "$($crtsh)json?ski=$($SearchInfo)$expired"}
+				'Subject-email' {$url = "$($crtsh)json?E=$($SearchInfo)"}
+				'Subject-CommonName' {$url = "$($crtsh)json?CN=$($SearchInfo)"}
+				'Subject-OrgaName' {$url = "$($crtsh)json?O=$($SearchInfo)"}
+				'Subject-OrgaUnitName' {$url = "$($crtsh)json?OU=$($SearchInfo)"}
+				'San-DnsName' {$url = "$($crtsh)json?dNSName=$($SearchInfo)"}
+				'San-IP' {$url = "$($crtsh)json?iPAddress=$($SearchInfo)"}
+				'San-RFC822Name' {$url = "$($crtsh)json?rfc822Name=$($SearchInfo)"}
+				'Cert-SubjectKeyIdentifier' {$url = "$($crtsh)json?ski=$($SearchInfo)"}
 				Default {$url = "$($crtsh)json?q=$($SearchInfo)"}
 			}
 		} else {
 			$url = "$($crtsh)json?q=$($SearchInfo)"
 		}
+		if (-not $IncludeExpired) {
+		    $url = "$url&exclude=expired"
+		}		
 		$Script:FinalCTLInfo = @()
 		$Script:CTLTemplateObject = New-Object psobject
 		$CTLTemplateObject | Add-Member -MemberType NoteProperty -Name "min_cert_id" -Value $null
 		$CTLTemplateObject | Add-Member -MemberType NoteProperty -Name "issuer_ca_id" -Value $null
 		$CTLTemplateObject | Add-Member -MemberType NoteProperty -Name "not_before" -Value $null
+		$CTLTemplateObject | Add-Member -MemberType NoteProperty -Name "not_after" -Value $null		
 		$CTLTemplateObject | Add-Member -MemberType NoteProperty -Name "name_value" -Value $null
 		$CTLTemplateObject | Add-Member -MemberType NoteProperty -Name "issuer_name" -Value $null
 		$CTLTemplateObject | Add-Member -MemberType NoteProperty -Name "min_entry_timestamp" -Value $null
@@ -152,8 +151,8 @@ Function Get-CertTransparencyInfo {
 			$webdata = invoke-webrequest $url
 		} catch {
 			write-warning "No certificate found or website not available"
-			write-error "Error Type: $($_.Exception.GetType().FullName)"
-			write-error "Error Message: $($_.Exception.Message)"
+			#write-error "Error Type: $($_.Exception.GetType().FullName)"
+			#write-error "Error Message: $($_.Exception.Message)"
 			return
 		}
 		try {
@@ -184,6 +183,7 @@ Function Get-CertTransparencyInfo {
 					$tmpobcert = new-object System.Security.Cryptography.X509Certificates.X509Certificate2
 					$tmpobcert.Import($tmpcert.content)
 					$tmpobj.Cli_certificate = $tmpobcert
+					$tmpobj.not_after = $tmpobcert.NotAfter
 				}
 			}
 			$Script:FinalCTLInfo += $tmpobj
