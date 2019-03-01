@@ -3,9 +3,8 @@ All certificate information you need - a cmdlet to request / search all certific
 
 (c) 2018 lucas-cueff.com Distributed under Artistic Licence 2.0 (https://opensource.org/licenses/artistic-license-2.0).
 
-## version 0.3 info
-include expired certificates in result with IncludeExpired swith - requested and proposed by plaintextcity
-manage 404 error code from crt.sh as no result/certificate found
+## version 0.4 info
+fix JSON output issue with new crt.sh version
 
 ## install use-onyphe from PowerShell Gallery repository
 You can easily install it from powershell gallery repository
