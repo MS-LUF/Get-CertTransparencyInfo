@@ -12,7 +12,7 @@
 RootModule = 'Get-CertTransparencyInfo.psm1'
 
 # Num�ro de version de ce module.
-ModuleVersion = '0.3'
+ModuleVersion = '0.4.0'
 
 # �ditions PS prises en charge
 # CompatiblePSEditions = @()
@@ -108,7 +108,7 @@ PrivateData = @{
         IconUri = 'http://www.lucas-cueff.com/files/gallery.png'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'check 404 error from website'
+        ReleaseNotes = 'fix new json parameter with new crt.sh website'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''

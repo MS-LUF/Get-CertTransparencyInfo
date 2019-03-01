@@ -3,7 +3,7 @@
 #
 # Released on: 01/2018
 #
-# v0.2 : include expired certificqtes in result with IncludeExpired swith - requested and proposed by plaintextcity on github
+# v0.4.0: fix json request with new crt.sh website version
 #
 #'(c) 2018 lucas-cueff.com - Distributed under Artistic Licence 2.0 (https://opensource.org/licenses/artistic-license-2.0).'
 
@@ -106,10 +106,11 @@ Function Get-CertTransparencyInfo {
 
 
 	#>
+	[cmdletbinding()]
 		param(
-			[parameter(ValueFromPipelineByPropertyName=$true,ValueFromPipeline=$true,Mandatory=$false)]
+			[parameter(ValueFromPipelineByPropertyName=$true,ValueFromPipeline=$true,Mandatory=$true)]
 			   [string] $SearchInfo,
-			   [parameter(Mandatory=$false)] 
+			[parameter(Mandatory=$false)] 
 			[ValidateSet('Subject-email','Subject-CommonName','Subject-OrgaName','Subject-OrgaUnitName','San-DnsName','San-IP','San-RFC822Name','Cert-SubjectKeyIdentifier')]
 			   [String]$AdvSearch,
 			[parameter(Mandatory=$false)]
@@ -128,18 +129,18 @@ Function Get-CertTransparencyInfo {
 		}
 		if ($advsearch){
 			switch ($advsearch) {
-				'Subject-email' {$url = "$($crtsh)json?E=$($SearchInfo)$ExcludeExpired"}
-				'Subject-CommonName' {$url = "$($crtsh)json?CN=$($SearchInfo)$ExcludeExpired"}
-				'Subject-OrgaName' {$url = "$($crtsh)json?O=$($SearchInfo)$ExcludeExpired"}
-				'Subject-OrgaUnitName' {$url = "$($crtsh)json?OU=$($SearchInfo)$ExcludeExpired"}
-				'San-DnsName' {$url = "$($crtsh)json?dNSName=$($SearchInfo)$ExcludeExpired"}
-				'San-IP' {$url = "$($crtsh)json?iPAddress=$($SearchInfo)$ExcludeExpired"}
-				'San-RFC822Name' {$url = "$($crtsh)json?rfc822Name=$($SearchInfo)$ExcludeExpired"}
-				'Cert-SubjectKeyIdentifier' {$url = "$($crtsh)json?ski=$($SearchInfo)$ExcludeExpired"}
-				Default {$url = "$($crtsh)json?q=$($SearchInfo)"}
+				'Subject-email' {$url = "$($crtsh)?E=$($SearchInfo)&output=json$ExcludeExpired"}
+				'Subject-CommonName' {$url = "$($crtsh)?CN=$($SearchInfo)&output=json$ExcludeExpired"}
+				'Subject-OrgaName' {$url = "$($crtsh)?O=$($SearchInfo)&output=json$ExcludeExpired"}
+				'Subject-OrgaUnitName' {$url = "$($crtsh)?OU=$($SearchInfo)&output=json$ExcludeExpired"}
+				'San-DnsName' {$url = "$($crtsh)?dNSName=$($SearchInfo)&output=json$ExcludeExpired"}
+				'San-IP' {$url = "$($crtsh)?iPAddress=$($SearchInfo)&output=json$ExcludeExpired"}
+				'San-RFC822Name' {$url = "$($crtsh)?rfc822Name=$($SearchInfo)&output=json$ExcludeExpired"}
+				'Cert-SubjectKeyIdentifier' {$url = "$($crtsh)?ski=$($SearchInfo)&output=json$ExcludeExpired"}
+				Default {$url = "$($crtsh)?q=$($SearchInfo)&output=json"}
 			}
 		} else {
-			$url = "$($crtsh)json?q=$($SearchInfo)"
+			$url = "$($crtsh)?q=$($SearchInfo)&output=json"
 		}
 		$Script:FinalCTLInfo = @()
 		$Script:CTLTemplateObject = New-Object psobject
@@ -168,8 +169,7 @@ Function Get-CertTransparencyInfo {
 			return
 		}
 		try {
-			$Filteredwebdata = $webdata.content -split "}" | ForEach-Object {"{0}}}" -f $_}
-			$Filteredwebdata = $Filteredwebdata -ne "}" | convertfrom-json
+			$Filteredwebdata = $webdata.content | convertfrom-json
 		} catch {
 			write-warning "Error when parsing Json file"
 			write-error "Error Type: $($_.Exception.GetType().FullName)"
