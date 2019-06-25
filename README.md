@@ -100,22 +100,22 @@ using a simple powershell command and an internet access :-)
 	
 		.EXAMPLE
 		get certificate info from CTL databases for google.com domain
-		C:\PS> Get-CertTransparancyInfo -SearchInfo "google.com"
+		C:\PS> Get-CertTransparencyInfo -SearchInfo "google.com"
 		
 		.EXAMPLE
 		get certificate info from CTL databases for google-*.com domain
-		C:\PS> Get-CertTransparancyInfo -SearchInfo "google-*.com"
+		C:\PS> Get-CertTransparencyInfo -SearchInfo "google-*.com"
 
 		.EXAMPLE
 		get certificate info from CTL databases for certificates containing *.google.com in their SAN
-		C:\PS> Get-CertTransparancyInfo -SearchInfo "*google.com" -AdvSearch San-DnsName
+		C:\PS> Get-CertTransparencyInfo -SearchInfo "*google.com" -AdvSearch San-DnsName
 		
 		.EXAMPLE
 		get certificate info from CTL databases for certificates containing *.google.com in their SAN and dump certificate found
-		C:\PS> Get-CertTransparancyInfo -SearchInfo "*google.com" -AdvSearch San-DnsName -GetCertificate
+		C:\PS> Get-CertTransparencyInfo -SearchInfo "*google.com" -AdvSearch San-DnsName -GetCertificate
 		
 		.EXAMPLE
 		get certificate info from CTL databases for google.com domain including expired
-		C:\PS> Get-CertTransparancyInfo -SearchInfo "google.com" -IncludeExpired
+		C:\PS> Get-CertTransparencyInfo -SearchInfo "google.com" -IncludeExpired
     
  ```
