@@ -183,7 +183,11 @@ Function Get-CertTransparencyInfo {
 			$tmpobj.name_value = $data.name_value
 			$tmpobj.issuer_name = $data.issuer_name
 			$tmpobj.not_before = get-date $data.not_before
-			$tmpobj.min_entry_timestamp = get-date $data.min_entry_timestamp
+			try {
+				$tmpobj.min_entry_timestamp = get-date $data.min_entry_timestamp
+			} catch {
+
+			}
 			$tmpobj.Cli_online_obj_url = "$($crtsh)?id=$($data.min_cert_id)"
 			$tmpobj.Cli_online_certificate_url = "$($crtsh)?d=$($data.min_cert_id)"
 			if ($advsearch) {$tmpobj.Cli_adv_search = $advsearch}
